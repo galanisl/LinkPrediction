@@ -5,7 +5,7 @@ Version: 0.9
 Date: 2017-09-20
 Author: Gregorio Alanis-Lobato
 Maintainer: Gregorio Alanis-Lobato <galanisl@uni-mainz.de>
-Description: Implementation of different classes link predictors and methods to assess and visualise their performance.
+Description: Implementation of different classes of link predictors and methods to assess and visualise their performance.
 License: MIT + file LICENSE
 Depends: R (>= 3.1)
 Imports: igraph (>= 1.1), ggplot2 (>= 2.2), dplyr (>= 0.7), purrr (>= 0.2), Matrix (>= 1.2), RSpectra (>= 0.12)

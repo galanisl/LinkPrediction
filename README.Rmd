@@ -5,7 +5,7 @@ date: false
 output: rmarkdown::github_document
 ---
 
-Implementation of different classes link predictors and methods to assess and 
+Implementation of different classes of link predictors and methods to assess and 
 visualise their performance.
 
 # Introduction
@@ -52,10 +52,10 @@ be assessed and visualised with functions `prune_recover` and
 
 For more information on the link prediction problem, see:
 
-- Martí́nez, V., Berzal, F. & Cubero, J.-C. A survey of link prediction in
+- Martínez, V., Berzal, F. & Cubero, J.-C. A survey of link prediction in
 complex networks. *ACM Computing Surveys* **49**, 1-33 (2016).
-- Lü̈, L., Pan, L., Zhou, T., Zhang, Y.-C. & Stanley, H. E. Toward link
-predictability of complex networks. *PNAS* **112**, 2325–2330 (2015).
+- Lü, L., Pan, L., Zhou, T., Zhang, Y.-C. & Stanley, H. E. Toward link
+predictability of complex networks. *PNAS* **112**, 2325-2330 (2015).
 
 # Installation
 
@@ -78,6 +78,10 @@ install_github("galanisl/LinkPrediction")
 ```
 
 # Usage
+
+```{r setup, include=FALSE}
+library(dplyr)
+```
 
 To start using `LinkPrediction`, load the package:
 
@@ -110,7 +114,7 @@ Since the $\sigma_c$ is high, link predictors are likely to give us good
 candidates of interaction.
 
 Let's now implement a link predictor of our own with the help of function 
-`get_non_edges`. This function will return a tibble with a random ordering of 
+`get_non_edges`. Our method will return a tibble with a random ordering of 
 the disconnected node pairs in the network:
 
 ```{r}
@@ -131,7 +135,7 @@ assessment <- prune_recover(jazz_collab,
                             "lp_rnd", 
                             "lp_cn", 
                             "lp_car", 
-                            "lp_isomap")
+                            "lp_spm")
 
 plot_lp_precision_sd(assessment)
 ```
