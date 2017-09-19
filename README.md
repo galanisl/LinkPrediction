@@ -88,13 +88,13 @@ sigma_c <- structural_consistency(jazz_collab)
 mean(sigma_c)
 ```
 
-    ## [1] 0.705438
+    ## [1] 0.7076642
 
 ``` r
 sd(sigma_c)
 ```
 
-    ## [1] 0.01962508
+    ## [1] 0.01974268
 
 Since the *σ*<sub>*c*</sub> is high, link predictors are likely to give us good candidates of interaction.
 
@@ -123,3 +123,43 @@ plot_lp_precision_sd(assessment)
 ```
 
 ![](README_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-5-1.png)
+
+Session information
+===================
+
+``` r
+sessionInfo()
+```
+
+    ## R version 3.4.1 (2017-06-30)
+    ## Platform: x86_64-pc-linux-gnu (64-bit)
+    ## Running under: Ubuntu 16.04.3 LTS
+    ## 
+    ## Matrix products: default
+    ## BLAS: /usr/lib/openblas-base/libblas.so.3
+    ## LAPACK: /usr/lib/libopenblasp-r0.2.18.so
+    ## 
+    ## locale:
+    ##  [1] LC_CTYPE=en_GB.UTF-8       LC_NUMERIC=C              
+    ##  [3] LC_TIME=de_DE.UTF-8        LC_COLLATE=en_GB.UTF-8    
+    ##  [5] LC_MONETARY=de_DE.UTF-8    LC_MESSAGES=en_GB.UTF-8   
+    ##  [7] LC_PAPER=de_DE.UTF-8       LC_NAME=C                 
+    ##  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+    ## [11] LC_MEASUREMENT=de_DE.UTF-8 LC_IDENTIFICATION=C       
+    ## 
+    ## attached base packages:
+    ## [1] stats     graphics  grDevices utils     datasets  methods   base     
+    ## 
+    ## other attached packages:
+    ## [1] bindrcpp_0.2       LinkPrediction_0.9 dplyr_0.7.3       
+    ## 
+    ## loaded via a namespace (and not attached):
+    ##  [1] igraph_1.1.2     Rcpp_0.12.12     knitr_1.16       bindr_0.1       
+    ##  [5] magrittr_1.5     munsell_0.4.3    colorspace_1.3-2 lattice_0.20-35 
+    ##  [9] R6_2.2.2         rlang_0.1.2      plyr_1.8.4       stringr_1.2.0   
+    ## [13] tools_3.4.1      grid_3.4.1       gtable_0.2.0     RSpectra_0.12-0 
+    ## [17] htmltools_0.3.6  lazyeval_0.2.0   yaml_2.1.14      assertthat_0.2.0
+    ## [21] rprojroot_1.2    digest_0.6.12    tibble_1.3.4     Matrix_1.2-10   
+    ## [25] purrr_0.2.3      ggplot2_2.2.1    glue_1.1.1       evaluate_0.10.1 
+    ## [29] rmarkdown_1.6    labeling_0.3     stringi_1.1.5    compiler_3.4.1  
+    ## [33] scales_0.4.1     backports_1.1.0  pkgconfig_2.0.1

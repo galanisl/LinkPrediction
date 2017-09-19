@@ -139,3 +139,9 @@ assessment <- prune_recover(jazz_collab,
 
 plot_lp_precision_sd(assessment)
 ```
+
+# Session information
+
+```{r}
+sessionInfo()
+```
