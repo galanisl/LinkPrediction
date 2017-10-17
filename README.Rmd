@@ -19,8 +19,15 @@ between cities in an airport transportation network.
 
 To assess the performance of link predictors, one normally removes an increasing
 number of edges $E^R \subset E$ from the network of interest, applies a link 
-prediction method to the pruned network and checks whether the $|E^R|$ candidate
-links with highest likelihood scores are in $E^R$.
+prediction method to the pruned network and evaluates its performance with one 
+of the following metrics:
+
+- `recall@k`: Reports of the fraction of candidate links with the $|E^R|$ 
+highest likelihood scores that are in $E^R$ (Recall at $k$, where $k = |E^R|$).
+- `aupr`: The area under the Precision-Recall curve.
+- `auroc`: The area under the Receiving Operating Characteristic curve.
+- `avg_prec`: The average Precision at the point where Recall reaches its 
+maximum value of 1.
 
 `LinkPrediction` implements the following classes of link prediction techniques:
 
@@ -48,7 +55,7 @@ on this below).
 
 Finally, the performance of these link predictors on a network of interest can
 be assessed and visualised with functions `prune_recover` and 
-`plot_lp_precision`.
+`plot_lp_performance`.
 
 For more information on the link prediction problem, see:
 
@@ -135,9 +142,10 @@ assessment <- prune_recover(jazz_collab,
                             "lp_rnd", 
                             "lp_cn", 
                             "lp_car", 
-                            "lp_spm")
+                            "lp_spm",
+                            metric = "recall@k")
 
-plot_lp_precision_sd(assessment)
+plot_lp_performance(assessment, err = "sd")
 ```
 
 # Session information

@@ -4,7 +4,7 @@
 \alias{prune_predict_assess}
 \title{Determine the performance of a link predictor}
 \usage{
-prune_predict_assess(g, method, links_rem, removable_links)
+prune_predict_assess(g, method, links_rem, removable_links, metric)
 }
 \arguments{
 \item{g}{igraph; A network of interest.}
@@ -14,17 +14,20 @@ prune_predict_assess(g, method, links_rem, removable_links)
 \item{links_rem}{integer; Number of links to prune from the network.}
 
 \item{removable_links}{igraph edge sequence; Set of edges that can be pruned.}
+
+\item{metric}{character; The metric to evaluate the link predictor(s) 
+performance. Should be one of 'recall@k', 'aupr', 'auroc' or 'avg_prec'.}
 }
 \value{
-The number of top-\code{links_rem} ranked links that are in the set
-of removed edges.
+The performance of the link predictor, according to the selected
+evaluation metric.
 }
 \description{
 Given a network of interest, the name of a link predictor, a number of links 
 to prune from the network and a set of removable links, samples edges at 
 random from the removable set and prunes the network. Then applies the link 
-prediction method to the pruned topology and checks if the 
-top-\code{links_rem} ranked links are in the set of removed edges.
+prediction method to the pruned topology and evaluates the prediction by the
+given metric
 }
 \author{
 Gregorio Alanis-Lobato \email{galanisl@uni-mainz.de}

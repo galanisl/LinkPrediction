@@ -5,7 +5,7 @@
 \title{Performance evaluation of link predictors}
 \usage{
 prune_recover(g, ..., probes = seq(0.1, 0.5, 0.1), epochs = 10,
-  preserve_conn = FALSE, use_weights = FALSE)
+  metric = "recall@k", preserve_conn = FALSE, use_weights = FALSE)
 }
 \arguments{
 \item{g}{igraph; The network of interest.}
@@ -20,6 +20,9 @@ from \code{g} at random.}
 
 \item{epochs}{integer; Number of times each fraction of links is randomly
 removed.}
+
+\item{metric}{character; The metric to evaluate the link predictor(s) 
+performance. Should be one of 'recall@k', 'aupr', 'auroc' or 'avg_prec'.}
 
 \item{preserve_conn}{logical; Should network connectivity be preserved after 
 edge pruning? This is important for some prediction techniques that can only 
@@ -36,7 +39,8 @@ Tibble with the following columns:
 \item{epoch}{Epoch of link removal.}
 \item{frac_rem}{Fraction of links pruned at the specified epoch.}
 \item{links_rem}{Number of links pruned at the specified epoch.}
-\item{links_recov}{Number of removed links recoverd by the link predictor.}
+\item{perf}{The performance of the link predictor, according to the selected
+evaluation metric.}
 }
 \description{
 Given a network of interest and any number of link prediction function names,
