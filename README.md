@@ -9,7 +9,12 @@ Introduction
 
 Complex systems can be represented by graphs *G*(*V*, *E*), where *E* is the set of interactions (edges) between a set *V* of system components (nodes). Link predictors assign likelihood scores of interaction to all node pairs that are disconnected in the observable network topology. These scores can lead to the prediction of future friendships in a social network or future direct flights between cities in an airport transportation network.
 
-To assess the performance of link predictors, one normally removes an increasing number of edges *E*<sup>*R*</sup> ⊂ *E* from the network of interest, applies a link prediction method to the pruned network and checks whether the |*E*<sup>*R*</sup>| candidate links with highest likelihood scores are in *E*<sup>*R*</sup>.
+To assess the performance of link predictors, one normally removes an increasing number of edges *E*<sup>*R*</sup> ⊂ *E* from the network of interest, applies a link prediction method to the pruned network and evaluates its performance with one of the following metrics:
+
+-   `recall@k`: Reports of the fraction of candidate links with the |*E*<sup>*R*</sup>| highest likelihood scores that are in *E*<sup>*R*</sup> (Recall at *k*, where *k* = |*E*<sup>*R*</sup>|).
+-   `aupr`: The area under the Precision-Recall curve.
+-   `auroc`: The area under the Receiving Operating Characteristic curve.
+-   `avg_prec`: The average Precision at the point where Recall reaches its maximum value of 1.
 
 `LinkPrediction` implements the following classes of link prediction techniques:
 
@@ -21,7 +26,7 @@ To assess the performance of link predictors, one normally removes an increasing
 
 In addition, `LinkPrediction` includes function `lp_matrix` and `get_non_edges`, which are key to extend the package with other link prediction approaches (more on this below).
 
-Finally, the performance of these link predictors on a network of interest can be assessed and visualised with functions `prune_recover` and `plot_lp_precision`.
+Finally, the performance of these link predictors on a network of interest can be assessed and visualised with functions `prune_recover` and `plot_lp_performance`.
 
 For more information on the link prediction problem, see:
 
@@ -88,13 +93,13 @@ sigma_c <- structural_consistency(jazz_collab)
 mean(sigma_c)
 ```
 
-    ## [1] 0.7076642
+    ## [1] 0.7054745
 
 ``` r
 sd(sigma_c)
 ```
 
-    ## [1] 0.01974268
+    ## [1] 0.02147908
 
 Since the *σ*<sub>*c*</sub> is high, link predictors are likely to give us good candidates of interaction.
 
@@ -117,9 +122,10 @@ assessment <- prune_recover(jazz_collab,
                             "lp_rnd", 
                             "lp_cn", 
                             "lp_car", 
-                            "lp_spm")
+                            "lp_spm",
+                            metric = "recall@k")
 
-plot_lp_precision_sd(assessment)
+plot_lp_performance(assessment, err = "sd")
 ```
 
 ![](README_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-5-1.png)
@@ -131,7 +137,7 @@ Session information
 sessionInfo()
 ```
 
-    ## R version 3.4.1 (2017-06-30)
+    ## R version 3.4.2 (2017-09-28)
     ## Platform: x86_64-pc-linux-gnu (64-bit)
     ## Running under: Ubuntu 16.04.3 LTS
     ## 
@@ -151,15 +157,15 @@ sessionInfo()
     ## [1] stats     graphics  grDevices utils     datasets  methods   base     
     ## 
     ## other attached packages:
-    ## [1] bindrcpp_0.2       LinkPrediction_0.9 dplyr_0.7.3       
+    ## [1] bindrcpp_0.2       LinkPrediction_1.0 dplyr_0.7.4       
     ## 
     ## loaded via a namespace (and not attached):
-    ##  [1] igraph_1.1.2     Rcpp_0.12.12     knitr_1.16       bindr_0.1       
+    ##  [1] igraph_1.1.2     Rcpp_0.12.13     knitr_1.17       bindr_0.1       
     ##  [5] magrittr_1.5     munsell_0.4.3    colorspace_1.3-2 lattice_0.20-35 
     ##  [9] R6_2.2.2         rlang_0.1.2      plyr_1.8.4       stringr_1.2.0   
-    ## [13] tools_3.4.1      grid_3.4.1       gtable_0.2.0     RSpectra_0.12-0 
+    ## [13] tools_3.4.2      grid_3.4.2       gtable_0.2.0     RSpectra_0.12-0 
     ## [17] htmltools_0.3.6  lazyeval_0.2.0   yaml_2.1.14      assertthat_0.2.0
-    ## [21] rprojroot_1.2    digest_0.6.12    tibble_1.3.4     Matrix_1.2-10   
+    ## [21] rprojroot_1.2    digest_0.6.12    tibble_1.3.4     Matrix_1.2-11   
     ## [25] purrr_0.2.3      ggplot2_2.2.1    glue_1.1.1       evaluate_0.10.1 
-    ## [29] rmarkdown_1.6    labeling_0.3     stringi_1.1.5    compiler_3.4.1  
-    ## [33] scales_0.4.1     backports_1.1.0  pkgconfig_2.0.1
+    ## [29] rmarkdown_1.6    labeling_0.3     stringi_1.1.5    compiler_3.4.2  
+    ## [33] PRROC_1.3        scales_0.5.0     backports_1.1.1  pkgconfig_2.0.1
