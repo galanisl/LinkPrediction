@@ -22,7 +22,7 @@ number of edges $E^R \subset E$ from the network of interest, applies a link
 prediction method to the pruned network and evaluates its performance with one 
 of the following metrics:
 
-- `recall@k`: Reports of the fraction of candidate links with the $|E^R|$ 
+- `recall_at_k`: Reports of the fraction of candidate links with the $|E^R|$ 
 highest likelihood scores that are in $E^R$ (Recall at $k$, where $k = |E^R|$).
 - `aupr`: The area under the Precision-Recall curve.
 - `auroc`: The area under the Receiving Operating Characteristic curve.
@@ -54,8 +54,8 @@ which are key to extend the package with other link prediction approaches (more
 on this below).
 
 Finally, the performance of these link predictors on a network of interest can
-be assessed and visualised with functions `prune_recover` and 
-`plot_lp_performance`.
+be assessed and visualised with functions `prune_recover` (which computes all 
+the above-mentioned evaluation metrics) and `plot_lp_performance`.
 
 For more information on the link prediction problem, see:
 
@@ -142,8 +142,7 @@ assessment <- prune_recover(jazz_collab,
                             "lp_rnd", 
                             "lp_cn", 
                             "lp_car", 
-                            "lp_spm",
-                            metric = "recall@k")
+                            "lp_spm")
 
 plot_lp_performance(assessment, err = "sd")
 ```

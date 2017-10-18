@@ -11,7 +11,7 @@ Complex systems can be represented by graphs *G*(*V*, *E*), where *E* is the s
 
 To assess the performance of link predictors, one normally removes an increasing number of edges *E*<sup>*R*</sup> ⊂ *E* from the network of interest, applies a link prediction method to the pruned network and evaluates its performance with one of the following metrics:
 
--   `recall@k`: Reports of the fraction of candidate links with the |*E*<sup>*R*</sup>| highest likelihood scores that are in *E*<sup>*R*</sup> (Recall at *k*, where *k* = |*E*<sup>*R*</sup>|).
+-   `recall_at_k`: Reports of the fraction of candidate links with the |*E*<sup>*R*</sup>| highest likelihood scores that are in *E*<sup>*R*</sup> (Recall at *k*, where *k* = |*E*<sup>*R*</sup>|).
 -   `aupr`: The area under the Precision-Recall curve.
 -   `auroc`: The area under the Receiving Operating Characteristic curve.
 -   `avg_prec`: The average Precision at the point where Recall reaches its maximum value of 1.
@@ -26,7 +26,7 @@ To assess the performance of link predictors, one normally removes an increasing
 
 In addition, `LinkPrediction` includes function `lp_matrix` and `get_non_edges`, which are key to extend the package with other link prediction approaches (more on this below).
 
-Finally, the performance of these link predictors on a network of interest can be assessed and visualised with functions `prune_recover` and `plot_lp_performance`.
+Finally, the performance of these link predictors on a network of interest can be assessed and visualised with functions `prune_recover` (which computes all the above-mentioned evaluation metrics) and `plot_lp_performance`.
 
 For more information on the link prediction problem, see:
 
@@ -93,13 +93,13 @@ sigma_c <- structural_consistency(jazz_collab)
 mean(sigma_c)
 ```
 
-    ## [1] 0.7054745
+    ## [1] 0.705292
 
 ``` r
 sd(sigma_c)
 ```
 
-    ## [1] 0.02147908
+    ## [1] 0.01936337
 
 Since the *σ*<sub>*c*</sub> is high, link predictors are likely to give us good candidates of interaction.
 
@@ -122,8 +122,7 @@ assessment <- prune_recover(jazz_collab,
                             "lp_rnd", 
                             "lp_cn", 
                             "lp_car", 
-                            "lp_spm",
-                            metric = "recall@k")
+                            "lp_spm")
 
 plot_lp_performance(assessment, err = "sd")
 ```
