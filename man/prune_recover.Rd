@@ -5,7 +5,7 @@
 \title{Performance evaluation of link predictors}
 \usage{
 prune_recover(g, ..., probes = seq(0.1, 0.5, 0.1), epochs = 10,
-  metric = "recall@k", preserve_conn = FALSE, use_weights = FALSE)
+  preserve_conn = FALSE, use_weights = FALSE)
 }
 \arguments{
 \item{g}{igraph; The network of interest.}
@@ -20,9 +20,6 @@ from \code{g} at random.}
 
 \item{epochs}{integer; Number of times each fraction of links is randomly
 removed.}
-
-\item{metric}{character; The metric to evaluate the link predictor(s) 
-performance. Should be one of 'recall@k', 'aupr', 'auroc' or 'avg_prec'.}
 
 \item{preserve_conn}{logical; Should network connectivity be preserved after 
 edge pruning? This is important for some prediction techniques that can only 
@@ -39,14 +36,19 @@ Tibble with the following columns:
 \item{epoch}{Epoch of link removal.}
 \item{frac_rem}{Fraction of links pruned at the specified epoch.}
 \item{links_rem}{Number of links pruned at the specified epoch.}
-\item{perf}{The performance of the link predictor, according to the selected
-evaluation metric.}
+\item{recall_at_k}{Fraction of top candidates links that are in the set of 
+removed edges.}
+\item{aupr}{The area under the Precision-Recall curve.}
+\item{auroc}{The area under the Receiving Operating Characteristic curve.}
+\item{avg_prec}{The average Precision at the point where Recall reaches its 
+maximum value of 1.}
 }
 \description{
 Given a network of interest and any number of link prediction function names,
-assesses the performance of these link predictors by pruning edges from the 
+evaluates the performance of these link predictors by pruning edges from the 
 network and checking if the methods give high likelihood scores to the
-removed edges.
+removed edges. Performance is assessed with four different metrics: Recall@k,
+AUPR, AUROC and Average Precision.
 }
 \examples{
 # Assess the performance of three link predictors applied to the Zachary 

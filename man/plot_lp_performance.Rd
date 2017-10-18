@@ -4,10 +4,14 @@
 \alias{plot_lp_performance}
 \title{Plot the performance evaluation of link predictors}
 \usage{
-plot_lp_performance(res, colours = NA, err = "none")
+plot_lp_performance(res, metric = "recall_at_k", colours = NA,
+  err = "none")
 }
 \arguments{
 \item{res}{tibble; The result of applying \code{prune_recover} to a network.}
+
+\item{metric}{character; The metric that we want to plot. Should be one of 
+'recall_at_k', 'aupr', 'auroc' or 'avg_prec'.}
 
 \item{colours}{character/numeric; A vector of colours to depict the 
 performance curve of each link prediction method. There should be as many
@@ -22,9 +26,9 @@ method(s).
 }
 \description{
 Given the assessment of one or more link predictors with function 
-\code{prune_recover}, plots the performance curves of the analysed methods.
-Each point corresponds to the average performance for a specific fraction of
-removed links across all considered epochs.
+\code{prune_recover}, plots the performance curves of the analysed methods
+using the chose metric. Each point corresponds to the average performance for
+a specific fraction of removed links across all considered epochs.
 }
 \examples{
 # Assess the performance of three link predictors applied to the Zachary 
@@ -35,7 +39,7 @@ assessment <- prune_recover(g = karate_club, "lp_cn", "lp_aa", "lp_pa")
 colours <- c("#8da0cb", "#fc8d62", "#66c2a5")
 
 # Plot the performance curves of the considered link predictors
-perf <- plot_lp_performance(assessment, colours, err = "sd")
+perf <- plot_lp_performance(assessment, colours = colours, err = "sd")
 
 }
 \author{

@@ -4,7 +4,7 @@
 \alias{prune_predict_assess}
 \title{Determine the performance of a link predictor}
 \usage{
-prune_predict_assess(g, method, links_rem, removable_links, metric)
+prune_predict_assess(g, method, links_rem, removable_links)
 }
 \arguments{
 \item{g}{igraph; A network of interest.}
@@ -14,20 +14,23 @@ prune_predict_assess(g, method, links_rem, removable_links, metric)
 \item{links_rem}{integer; Number of links to prune from the network.}
 
 \item{removable_links}{igraph edge sequence; Set of edges that can be pruned.}
-
-\item{metric}{character; The metric to evaluate the link predictor(s) 
-performance. Should be one of 'recall@k', 'aupr', 'auroc' or 'avg_prec'.}
 }
 \value{
-The performance of the link predictor, according to the selected
-evaluation metric.
+A named numeric vector with the performance of the link predictor.
+The elements of the vector are:
+\item{recall_at_k}{Fraction of top candidates links that are in the set of 
+removed edges.}
+\item{aupr}{The area under the Precision-Recall curve.}
+\item{auroc}{The area under the Receiving Operating Characteristic curve.}
+\item{avg_prec}{The average Precision at the point where Recall reaches its 
+maximum value of 1.}
 }
 \description{
 Given a network of interest, the name of a link predictor, a number of links 
 to prune from the network and a set of removable links, samples edges at 
 random from the removable set and prunes the network. Then applies the link 
-prediction method to the pruned topology and evaluates the prediction by the
-given metric
+prediction method to the pruned topology and evaluates the prediction with 
+four different metrics: Recall@k, AUPR, AUROC and Average Precision.
 }
 \author{
 Gregorio Alanis-Lobato \email{galanisl@uni-mainz.de}

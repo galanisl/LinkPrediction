@@ -5,9 +5,10 @@ globalVariables(c("frac_rem", "method", "perf", "avg_perf", "links_rem",
 #' Performance evaluation of link predictors
 #' 
 #' Given a network of interest and any number of link prediction function names,
-#' assesses the performance of these link predictors by pruning edges from the 
+#' evaluates the performance of these link predictors by pruning edges from the 
 #' network and checking if the methods give high likelihood scores to the
-#' removed edges.
+#' removed edges. Performance is assessed with four different metrics: Recall@k,
+#' AUPR, AUROC and Average Precision.
 #' 
 #' @param g igraph; The network of interest.
 #' @param ... character; One or more function names able to produce a tibble
@@ -18,8 +19,6 @@ globalVariables(c("frac_rem", "method", "perf", "avg_perf", "links_rem",
 #' from \code{g} at random.
 #' @param epochs integer; Number of times each fraction of links is randomly
 #' removed.
-#' @param metric character; The metric to evaluate the link predictor(s) 
-#' performance. Should be one of 'recall@k', 'aupr', 'auroc' or 'avg_prec'.
 #' @param preserve_conn logical; Should network connectivity be preserved after 
 #' edge pruning? This is important for some prediction techniques that can only 
 #' be applied to connected topologies. To preserve connectivity, the network's 
@@ -33,8 +32,12 @@ globalVariables(c("frac_rem", "method", "perf", "avg_perf", "links_rem",
 #' \item{epoch}{Epoch of link removal.}
 #' \item{frac_rem}{Fraction of links pruned at the specified epoch.}
 #' \item{links_rem}{Number of links pruned at the specified epoch.}
-#' \item{perf}{The performance of the link predictor, according to the selected
-#' evaluation metric.}
+#' \item{recall_at_k}{Fraction of top candidates links that are in the set of 
+#' removed edges.}
+#' \item{aupr}{The area under the Precision-Recall curve.}
+#' \item{auroc}{The area under the Receiving Operating Characteristic curve.}
+#' \item{avg_prec}{The average Precision at the point where Recall reaches its 
+#' maximum value of 1.}
 #' 
 #' @author Gregorio Alanis-Lobato \email{galanisl@uni-mainz.de}
 #' 
@@ -49,15 +52,12 @@ globalVariables(c("frac_rem", "method", "perf", "avg_perf", "links_rem",
 #' @export
 #' @importFrom igraph mst E head_of tail_of
 #' @importFrom dplyr tibble
-#' @importFrom purrr map2_dbl
+#' @importFrom purrr map2 map_dbl
 #'
 prune_recover <- function(g, ..., probes = seq(0.1, 0.5, 0.1), epochs = 10,
-                          metric = "recall@k", preserve_conn = FALSE, 
-                          use_weights = FALSE){
+                          preserve_conn = FALSE, use_weights = FALSE){
   predictors <- list(...)
-  if(!(metric %in% c("recall@k", "aupr", "auroc", "avg_prec"))){
-    stop("The selected metric is not valid!")
-  }
+  
   if(("lp_mce" %in% predictors || "lp_leig" %in% predictors || 
      "lp_isomap" %in% predictors) && !preserve_conn){
     stop(paste0("One or more of your link predictors requires a connected ",
@@ -82,12 +82,20 @@ prune_recover <- function(g, ..., probes = seq(0.1, 0.5, 0.1), epochs = 10,
                 epoch = rep(1:epochs, each = length(predictors)*length(probes)), 
                 frac_rem = rep(rep(probes, each = length(predictors)), epochs), 
                 links_rem = round(frac_rem * length(removable_links)), 
-                perf = numeric(col_len))
+                recall_at_k = numeric(col_len),
+                aupr = numeric(col_len),
+                auroc = numeric(col_len),
+                avg_prec = numeric(col_len))
   
-  res$perf <- map2_dbl(as.list(res$method), as.list(res$links_rem),
-                       prune_predict_assess, 
-                       g = g, removable_links = removable_links, 
-                       metric = metric)
+  evaluation <- map2(as.list(res$method), as.list(res$links_rem),
+                         prune_predict_assess, g = g, 
+                         removable_links = removable_links)
+  
+  res$recall_at_k <- map_dbl(evaluation, function(x) x["recall_at_k"])
+  res$aupr <- map_dbl(evaluation, function(x) x["aupr"])
+  res$auroc <- map_dbl(evaluation, function(x) x["auroc"])
+  res$avg_prec <- map_dbl(evaluation, function(x) x["avg_prec"])
+  
   return(res)
 }
 
@@ -96,58 +104,60 @@ prune_recover <- function(g, ..., probes = seq(0.1, 0.5, 0.1), epochs = 10,
 #' Given a network of interest, the name of a link predictor, a number of links 
 #' to prune from the network and a set of removable links, samples edges at 
 #' random from the removable set and prunes the network. Then applies the link 
-#' prediction method to the pruned topology and evaluates the prediction by the
-#' given metric
+#' prediction method to the pruned topology and evaluates the prediction with 
+#' four different metrics: Recall@k, AUPR, AUROC and Average Precision.
 #' 
 #' @param g igraph; A network of interest.
 #' @param method character; The name of a link prediction function.
 #' @param links_rem integer; Number of links to prune from the network.
 #' @param removable_links igraph edge sequence; Set of edges that can be pruned.
-#' @param metric character; The metric to evaluate the link predictor(s) 
-#' performance. Should be one of 'recall@k', 'aupr', 'auroc' or 'avg_prec'.
 #' 
-#' @return The performance of the link predictor, according to the selected
-#' evaluation metric.
+#' @return A named numeric vector with the performance of the link predictor.
+#' The elements of the vector are:
+#' \item{recall_at_k}{Fraction of top candidates links that are in the set of 
+#' removed edges.}
+#' \item{aupr}{The area under the Precision-Recall curve.}
+#' \item{auroc}{The area under the Receiving Operating Characteristic curve.}
+#' \item{avg_prec}{The average Precision at the point where Recall reaches its 
+#' maximum value of 1.}
 #' 
 #' @author Gregorio Alanis-Lobato \email{galanisl@uni-mainz.de}
 #' 
 #' @importFrom igraph delete_edges
 #' @importFrom PRROC pr.curve roc.curve
 #' 
-prune_predict_assess <- function(g, method, links_rem, removable_links, metric){
+prune_predict_assess <- function(g, method, links_rem, removable_links){
+  # Prepare vector for results
+  perf <- numeric(4)
+  names(perf) <- c("recall_at_k", "aupr", "auroc", "avg_prec")
+  
   # Sample edges at random from the removable set
   edg <- sample(removable_links, links_rem)
   
   # Prune the network of interest
   g_perturbed <- delete_edges(g, edg)
   
-  # Predict links
-  pred <- do.call(method, list(g = g_perturbed)) 
+  # Predict links and determine scores and classes
+  pred <- do.call(method, list(g = g_perturbed))
+  scores <- nrow(pred):1
+  classes <- g[from = pred$nodeA, to = pred$nodeB]
   
-  if(metric == "recall@k"){
-    pred <- pred[1:links_rem, ]
-    
-    # Determine the number of top predictions that are in the set of 
-    # removed edges
-    perf <- sum(g[from = pred$nodeA, to = pred$nodeB])/links_rem  
-  }else if(metric == "aupr"){
-    scores <- nrow(pred):1
-    classes <- g[from = pred$nodeA, to = pred$nodeB]
-    perf <- pr.curve(scores.class0 = scores, weights.class0 = classes, 
-                     sorted = T)$auc.integral
-  }else if(metric == "auroc"){
-    scores <- nrow(pred):1
-    classes <- g[from = pred$nodeA, to = pred$nodeB]
-    perf <- roc.curve(scores.class0 = scores, weights.class0 = classes, 
-                     sorted = T)$auc
-  }else if(metric == "avg_prec"){
-    scores <- nrow(pred):1
-    classes <- g[from = pred$nodeA, to = pred$nodeB]
-    pr <- pr.curve(scores.class0 = scores, weights.class0 = classes, 
-                     sorted = T, curve = T, minStepSize = 1)
-    rec_reaches_1 <- max(which(pr$curve[, 1] == 1))
-    perf <- mean(pr$curve[rec_reaches_1:(nrow(pr$curve) - 1), 2])
-  }
+  # Compute Recall@k
+  perf["recall_at_k"] <- sum(classes[1:links_rem])/links_rem
+  
+  # Compute AUPR
+  perf["aupr"] <- pr.curve(scores.class0 = scores, weights.class0 = classes, 
+                           sorted = T)$auc.integral
+  
+  # Compute AUROC
+  perf["auroc"] <- roc.curve(scores.class0 = scores, weights.class0 = classes, 
+                             sorted = T)$auc
+  
+  # Compute Avg. Precision
+  pr <- pr.curve(scores.class0 = scores, weights.class0 = classes, 
+                 sorted = T, curve = T, minStepSize = 1)
+  rec_reaches_1 <- max(which(pr$curve[, 1] == 1))
+  perf["avg_prec"] <- mean(pr$curve[rec_reaches_1:(nrow(pr$curve) - 1), 2])
   
   return(perf)
 }
@@ -155,11 +165,13 @@ prune_predict_assess <- function(g, method, links_rem, removable_links, metric){
 #' Plot the performance evaluation of link predictors
 #' 
 #' Given the assessment of one or more link predictors with function 
-#' \code{prune_recover}, plots the performance curves of the analysed methods.
-#' Each point corresponds to the average performance for a specific fraction of
-#' removed links across all considered epochs.
+#' \code{prune_recover}, plots the performance curves of the analysed methods
+#' using the chose metric. Each point corresponds to the average performance for
+#' a specific fraction of removed links across all considered epochs.
 #' 
 #' @param res tibble; The result of applying \code{prune_recover} to a network.
+#' @param metric character; The metric that we want to plot. Should be one of 
+#' 'recall_at_k', 'aupr', 'auroc' or 'avg_prec'.
 #' @param colours character/numeric; A vector of colours to depict the 
 #' performance curve of each link prediction method. There should be as many
 #' colours as assessed link predictors.
@@ -180,14 +192,22 @@ prune_predict_assess <- function(g, method, links_rem, removable_links, metric){
 #' colours <- c("#8da0cb", "#fc8d62", "#66c2a5")
 #' 
 #' # Plot the performance curves of the considered link predictors
-#' perf <- plot_lp_performance(assessment, colours, err = "sd")
+#' perf <- plot_lp_performance(assessment, colours = colours, err = "sd")
 #' 
 #' @export
 #' @importFrom dplyr %>% mutate group_by summarise n
 #' @import ggplot2
 #' @importFrom stats sd
 #'
-plot_lp_performance <- function(res, colours = NA, err = "none"){
+plot_lp_performance <- function(res, metric = "recall_at_k", colours = NA, 
+                                err = "none"){
+  y_axis <- switch(metric, 
+                   recall_at_k = "Recall@k", 
+                   aupr = "AUPR", 
+                   auroc = "AUROC", 
+                   avg_prec = "Avg. Precision",
+                   stop("The selected metric is not valid!")
+                   )
   if(any(is.na(colours))){
     colours = seq_along(unique(res$method))
   }else if(length(colours) != length(unique(res$method))){
@@ -196,6 +216,9 @@ plot_lp_performance <- function(res, colours = NA, err = "none"){
   if(!(err %in% c("none", "sd", "se"))){
     stop("The indicated error type is not valid!")
   }
+  
+  res <- res %>% mutate(perf = res[[metric]])
+  
   if(err == "none"){
     res <- res %>% group_by(method, frac_rem) %>% 
       summarise(avg_perf = mean(perf))
@@ -219,7 +242,7 @@ plot_lp_performance <- function(res, colours = NA, err = "none"){
     geom_errorbar(aes_(ymin = ~dw_err, ymax = ~up_err), width = err_bar_width) +
     scale_colour_manual(values = colours) +
     labs(x = "Fraction of removed links", 
-         y = "Performance", colour = "Predictor") + 
+         y = y_axis, colour = "Predictor") + 
     theme_bw() + theme(legend.background = element_blank(), 
                        legend.position = "top")
   
