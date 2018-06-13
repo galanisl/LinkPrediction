@@ -32,8 +32,8 @@ maximum value of 1.
 `LinkPrediction` implements the following classes of link prediction techniques:
 
 - Neighbourhood-based predictors, which assign high likelihood scores to node 
-pairs that share many neighbours (`lp_cn`, `lp_pa`, `lp_jc`, `lp_dice`, `lp_aa`
-and `lp_ra`).
+pairs that share many neighbours (`lp_cn`, `lp_pa`, `lp_jc`, `lp_dice`, `lp_aa`,
+`lp_ra` and `lp_l3`).
 - CAR-based predictors, which assign high likelihood scores to node pairs that 
 share many neighbours that also interact with themselves (`lp_car`, `lp_cpa`, 
 `lp_caa` and `lp_cra`).

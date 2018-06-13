@@ -68,6 +68,42 @@ lp_cn <- function(g){
   return(prediction)
 }
 
+#' Link prediction with L3
+#' 
+#' Given a network of interest, it computes the likelihood score of interaction,
+#' for all disconnected node pairs, with the L3 link predictor.
+#' 
+#' @param g igraph; The network of interest.
+#' 
+#' @return Tibble with the following columns:
+#' \item{nodeA}{The ID of a network node.}
+#' \item{nodeB}{The ID of a network node.}
+#' \item{scr}{The likelihood score of interaction for the node pair.}
+#' 
+#' @author Gregorio Alanis-Lobato \email{galanisl@uni-mainz.de}
+#' 
+#' @references Kovacs, I. A., et al. (2018) Network-based prediction of protein
+#' interactions. \emph{bioRxiv 275529} doi: https://doi.org/10.1101/275529
+#'
+#' @examples
+#' # Apply the L3 link predictor to the Zachary Karate Club network
+#' l3 <- lp_l3(g = karate_club)
+#' 
+#' @export
+#' @importFrom igraph as_adjacency_matrix
+#' @import Matrix
+#' @importFrom dplyr tibble %>% arrange desc
+#'
+lp_l3 <- function(g){
+  non_edges <- get_non_edges(g)
+  m <- as_adjacency_matrix(g, names = FALSE)
+  l3 <- (m %*% m) %*% m
+  prediction <- tibble(nodeA = non_edges[, 1], nodeB = non_edges[, 2],
+                       scr = l3[non_edges]) %>% 
+    arrange(desc(scr))
+  return(prediction)
+}
+
 #' Link prediction with Preferential Attachment
 #' 
 #' Given a network of interest, it computes the likelihood score of interaction,

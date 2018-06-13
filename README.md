@@ -18,7 +18,7 @@ To assess the performance of link predictors, one normally removes an increasing
 
 `LinkPrediction` implements the following classes of link prediction techniques:
 
--   Neighbourhood-based predictors, which assign high likelihood scores to node pairs that share many neighbours (`lp_cn`, `lp_pa`, `lp_jc`, `lp_dice`, `lp_aa` and `lp_ra`).
+-   Neighbourhood-based predictors, which assign high likelihood scores to node pairs that share many neighbours (`lp_cn`, `lp_pa`, `lp_jc`, `lp_dice`, `lp_aa`, `lp_ra` and `lp_l3`).
 -   CAR-based predictors, which assign high likelihood scores to node pairs that share many neighbours that also interact with themselves (`lp_car`, `lp_cpa`, `lp_caa` and `lp_cra`).
 -   Embedding-based methods rank non-adjacent nodes through distances on a network projection in two-dimensional Euclidean space (`lp_isomap`, `lp_leig`, and `lp_mce`).
 -   The Hierarchical Random Graph method, which searches the space of all possible dendrograms of a network for the ones that best fit its hierarchical structure. Non-adjacent node pairs that have high average probability of being connected within these dendrograms are considered good candidates for interaction (`lp_hrg`).
@@ -74,16 +74,16 @@ First, let's apply the Common Neighbours link predictor to the network:
     ## # A tibble: 16,761 x 3
     ##    nodeA nodeB   scr
     ##    <int> <int> <dbl>
-    ##  1     7   111    41
-    ##  2    27    79    37
-    ##  3    27    66    33
-    ##  4     7   113    29
-    ##  5    66   118    29
-    ##  6    74    89    28
-    ##  7    88    92    27
-    ##  8    23   124    27
-    ##  9    53    66    26
-    ## 10    27    99    26
+    ##  1     7   111   41.
+    ##  2    27    79   37.
+    ##  3    27    66   33.
+    ##  4     7   113   29.
+    ##  5    66   118   29.
+    ##  6    74    89   28.
+    ##  7    88    92   27.
+    ##  8    23   124   27.
+    ##  9    53    66   26.
+    ## 10    27    99   26.
     ## # ... with 16,751 more rows
 
 Note how the lp\_\* functions return a `tibble` of candidate links with their likelihoods of interaction. Let's now compute the structural consistency *σ*<sub>*c*</sub> ∈ \[0, 1\] of this network. The higher it is, the higher its link predictability:
@@ -93,13 +93,13 @@ sigma_c <- structural_consistency(jazz_collab)
 mean(sigma_c)
 ```
 
-    ## [1] 0.705292
+    ## [1] 0.7022263
 
 ``` r
 sd(sigma_c)
 ```
 
-    ## [1] 0.01936337
+    ## [1] 0.02050877
 
 Since the *σ*<sub>*c*</sub> is high, link predictors are likely to give us good candidates of interaction.
 
@@ -127,7 +127,7 @@ assessment <- prune_recover(jazz_collab,
 plot_lp_performance(assessment, err = "sd")
 ```
 
-![](README_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-5-1.png)
+![](README_files/figure-markdown_github/unnamed-chunk-5-1.png)
 
 Session information
 ===================
@@ -136,9 +136,9 @@ Session information
 sessionInfo()
 ```
 
-    ## R version 3.4.2 (2017-09-28)
+    ## R version 3.4.4 (2018-03-15)
     ## Platform: x86_64-pc-linux-gnu (64-bit)
-    ## Running under: Ubuntu 16.04.3 LTS
+    ## Running under: Ubuntu 16.04.4 LTS
     ## 
     ## Matrix products: default
     ## BLAS: /usr/lib/openblas-base/libblas.so.3
@@ -156,15 +156,16 @@ sessionInfo()
     ## [1] stats     graphics  grDevices utils     datasets  methods   base     
     ## 
     ## other attached packages:
-    ## [1] bindrcpp_0.2       LinkPrediction_1.0 dplyr_0.7.4       
+    ## [1] bindrcpp_0.2.2     LinkPrediction_1.0 dplyr_0.7.4       
     ## 
     ## loaded via a namespace (and not attached):
-    ##  [1] igraph_1.1.2     Rcpp_0.12.13     knitr_1.17       bindr_0.1       
-    ##  [5] magrittr_1.5     munsell_0.4.3    colorspace_1.3-2 lattice_0.20-35 
-    ##  [9] R6_2.2.2         rlang_0.1.2      plyr_1.8.4       stringr_1.2.0   
-    ## [13] tools_3.4.2      grid_3.4.2       gtable_0.2.0     RSpectra_0.12-0 
-    ## [17] htmltools_0.3.6  lazyeval_0.2.0   yaml_2.1.14      assertthat_0.2.0
-    ## [21] rprojroot_1.2    digest_0.6.12    tibble_1.3.4     Matrix_1.2-11   
-    ## [25] purrr_0.2.3      ggplot2_2.2.1    glue_1.1.1       evaluate_0.10.1 
-    ## [29] rmarkdown_1.6    labeling_0.3     stringi_1.1.5    compiler_3.4.2  
-    ## [33] PRROC_1.3        scales_0.5.0     backports_1.1.1  pkgconfig_2.0.1
+    ##  [1] Rcpp_0.12.16     RSpectra_0.12-0  pillar_1.2.1     compiler_3.4.4  
+    ##  [5] plyr_1.8.4       bindr_0.1.1      PRROC_1.3        tools_3.4.4     
+    ##  [9] digest_0.6.15    evaluate_0.10.1  tibble_1.4.2     gtable_0.2.0    
+    ## [13] lattice_0.20-35  pkgconfig_2.0.1  rlang_0.2.0      Matrix_1.2-14   
+    ## [17] igraph_1.2.1     cli_1.0.0        yaml_2.1.18      stringr_1.3.0   
+    ## [21] knitr_1.20       rprojroot_1.3-2  grid_3.4.4       glue_1.2.0      
+    ## [25] R6_2.2.2         rmarkdown_1.9    ggplot2_2.2.1    purrr_0.2.4     
+    ## [29] magrittr_1.5     backports_1.1.2  scales_0.5.0     htmltools_0.3.6 
+    ## [33] assertthat_0.2.0 colorspace_1.3-2 labeling_0.3     utf8_1.1.3      
+    ## [37] stringi_1.1.7    lazyeval_0.2.1   munsell_0.4.3    crayon_1.3.4
