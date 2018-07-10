@@ -93,13 +93,13 @@ sigma_c <- structural_consistency(jazz_collab)
 mean(sigma_c)
 ```
 
-    ## [1] 0.7022263
+    ## [1] 0.7053285
 
 ``` r
 sd(sigma_c)
 ```
 
-    ## [1] 0.02050877
+    ## [1] 0.01851257
 
 Since the *σ*<sub>*c*</sub> is high, link predictors are likely to give us good candidates of interaction.
 
@@ -156,16 +156,20 @@ sessionInfo()
     ## [1] stats     graphics  grDevices utils     datasets  methods   base     
     ## 
     ## other attached packages:
-    ## [1] bindrcpp_0.2.2     LinkPrediction_1.0 dplyr_0.7.4       
+    ## [1] bindrcpp_0.2.2     LinkPrediction_1.0 dplyr_0.7.6       
     ## 
     ## loaded via a namespace (and not attached):
-    ##  [1] Rcpp_0.12.16     RSpectra_0.12-0  pillar_1.2.1     compiler_3.4.4  
-    ##  [5] plyr_1.8.4       bindr_0.1.1      PRROC_1.3        tools_3.4.4     
-    ##  [9] digest_0.6.15    evaluate_0.10.1  tibble_1.4.2     gtable_0.2.0    
-    ## [13] lattice_0.20-35  pkgconfig_2.0.1  rlang_0.2.0      Matrix_1.2-14   
-    ## [17] igraph_1.2.1     cli_1.0.0        yaml_2.1.18      stringr_1.3.0   
-    ## [21] knitr_1.20       rprojroot_1.3-2  grid_3.4.4       glue_1.2.0      
-    ## [25] R6_2.2.2         rmarkdown_1.9    ggplot2_2.2.1    purrr_0.2.4     
-    ## [29] magrittr_1.5     backports_1.1.2  scales_0.5.0     htmltools_0.3.6 
-    ## [33] assertthat_0.2.0 colorspace_1.3-2 labeling_0.3     utf8_1.1.3      
-    ## [37] stringi_1.1.7    lazyeval_0.2.1   munsell_0.4.3    crayon_1.3.4
+    ##  [1] Rcpp_0.12.17        RSpectra_0.13-1     pillar_1.2.1       
+    ##  [4] compiler_3.4.4      plyr_1.8.4          bindr_0.1.1        
+    ##  [7] tools_3.4.4         digest_0.6.15       evaluate_0.10.1    
+    ## [10] tibble_1.4.2        gtable_0.2.0        lattice_0.20-35    
+    ## [13] pkgconfig_2.0.1     rlang_0.2.1         Matrix_1.2-14      
+    ## [16] igraph_1.2.1        cli_1.0.0           yaml_2.1.18        
+    ## [19] stringr_1.3.0       knitr_1.20          rprojroot_1.3-2    
+    ## [22] grid_3.4.4          tidyselect_0.2.4    glue_1.2.0         
+    ## [25] data.table_1.10.4-3 R6_2.2.2            rmarkdown_1.9      
+    ## [28] purrr_0.2.5         ggplot2_3.0.0       magrittr_1.5       
+    ## [31] backports_1.1.2     scales_0.5.0        htmltools_0.3.6    
+    ## [34] precrec_0.9.1       assertthat_0.2.0    colorspace_1.3-2   
+    ## [37] labeling_0.3        utf8_1.1.3          stringi_1.1.7      
+    ## [40] lazyeval_0.2.1      munsell_0.4.3       crayon_1.3.4

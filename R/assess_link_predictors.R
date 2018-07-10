@@ -124,7 +124,7 @@ prune_recover <- function(g, ..., probes = seq(0.1, 0.5, 0.1), epochs = 10,
 #' @author Gregorio Alanis-Lobato \email{galanisl@uni-mainz.de}
 #' 
 #' @importFrom igraph delete_edges
-#' @importFrom PRROC pr.curve roc.curve
+#' @import precrec
 #' 
 prune_predict_assess <- function(g, method, links_rem, removable_links){
   # Prepare vector for results
@@ -139,25 +139,19 @@ prune_predict_assess <- function(g, method, links_rem, removable_links){
   
   # Predict links and determine scores and classes
   pred <- do.call(method, list(g = g_perturbed))
-  scores <- nrow(pred):1
+  scr <- nrow(pred):1
   classes <- g[from = pred$nodeA, to = pred$nodeB]
   
   # Compute Recall@k
   perf["recall_at_k"] <- sum(classes[1:links_rem])/links_rem
   
-  # Compute AUPR
-  perf["aupr"] <- pr.curve(scores.class0 = scores, weights.class0 = classes, 
-                           sorted = T)$auc.integral
-  
-  # Compute AUROC
-  perf["auroc"] <- roc.curve(scores.class0 = scores, weights.class0 = classes, 
-                             sorted = T)$auc
+  # Compute AUPR and AUROC
+  meval <- evalmod(scores = scr, labels = classes)
+  perf["aupr"] <- attr(meval$prcs[[1]], "auc")
+  perf["auroc"] <- attr(meval$rocs[[1]], "auc")
   
   # Compute Avg. Precision
-  pr <- pr.curve(scores.class0 = scores, weights.class0 = classes, 
-                 sorted = T, curve = T, minStepSize = 1)
-  rec_reaches_1 <- max(which(pr$curve[, 1] == 1))
-  perf["avg_prec"] <- mean(pr$curve[rec_reaches_1:(nrow(pr$curve) - 1), 2])
+  perf["avg_prec"] <- mean(meval$prcs[[1]]$x[meval$prcs[[1]]$orig_points])
   
   return(perf)
 }
