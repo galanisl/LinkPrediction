@@ -151,7 +151,7 @@ prune_predict_assess <- function(g, method, links_rem, removable_links){
   perf["auroc"] <- attr(meval$rocs[[1]], "auc")
   
   # Compute Avg. Precision
-  perf["avg_prec"] <- mean(meval$prcs[[1]]$x[meval$prcs[[1]]$orig_points])
+  perf["avg_prec"] <- mean(meval$prcs[[1]]$y[meval$prcs[[1]]$orig_points])
   
   return(perf)
 }
