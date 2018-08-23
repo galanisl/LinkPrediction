@@ -97,7 +97,14 @@ lp_cn <- function(g){
 lp_l3 <- function(g){
   non_edges <- get_non_edges(g)
   m <- as_adjacency_matrix(g, names = FALSE)
+  
+  # Degree-normalise the adjacency matrix
+  D <- Matrix(diag(1/sqrt(degree(hippie))))
+  m <- (D %*% m) %*% D 
+  
+  # Compute the L3 score
   l3 <- (m %*% m) %*% m
+  
   prediction <- tibble(nodeA = non_edges[, 1], nodeB = non_edges[, 2],
                        scr = l3[non_edges]) %>% 
     arrange(desc(scr))
