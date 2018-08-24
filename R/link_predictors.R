@@ -99,7 +99,7 @@ lp_l3 <- function(g){
   m <- as_adjacency_matrix(g, names = FALSE)
   
   # Degree-normalise the adjacency matrix
-  D <- Matrix(diag(1/sqrt(degree(hippie))))
+  D <- Matrix(diag(1/sqrt(degree(g))))
   m <- (D %*% m) %*% D 
   
   # Compute the L3 score
